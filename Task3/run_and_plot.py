@@ -7,7 +7,7 @@ def compile_program(target):
     subprocess.run(["make", target])
 
 def execute_program(program,mpi_processes, *args):
-    command = f"mpirun -hostfile ../hosts -np {mpi_processes} ./{program} {' '.join(args)}"
+    command = f"OMP_NUM_THREADS=4 mpirun -hostfile hosts -np {mpi_processes} ./{program} {' '.join(args)}"
     print("Executing command:", command)
     
     result = subprocess.run(command, capture_output=True, text=True, shell=True)
@@ -32,7 +32,7 @@ def main(throws):
     
    
 
-    for program in ["task1"]:
+    for program in ["task3"]:
         with open(f"{program}_data.txt", "w") as data_file:
             for mpi_processes in [1, 2, 4, 8, 16]:
                 total_time = 0
@@ -50,8 +50,8 @@ def main(throws):
     set title 'Time per MPI processes ({throws} throws)'
     set ylabel 'Time'
     set xlabel 'Processes'
-    plot 'task1_data.txt' using 2:1 with linespoints title 'MPI', \
-         'task1_data.txt' using 2:1:(sprintf("%.4f",$1)) with labels offset char 1,1 notitle
+    plot 'task3_data.txt' using 2:1 with linespoints title 'MPI', \
+         'task3_data.txt' using 2:1:(sprintf("%.4f",$1)) with labels offset char 1,1 notitle
     """
 
     # Write the Gnuplot script to a file
